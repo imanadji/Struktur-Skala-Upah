@@ -561,8 +561,7 @@
         // --- PASSWORD SYSTEM LOGIC ---
         function getRequiredPassword() {
             const now = new Date();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            return `SSU-${month}`;
+            return `SSU-${now.getFullYear()}`;
         }
 
         function verifyPassword() {
