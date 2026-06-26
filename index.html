@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penyusunan Struktur & Skala Upah - Permenaker No. 1/2017</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@500;700&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+        }
+        
+        /* Premium Print Styles overriding default styles */
+        @media print {
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            #printArea {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                display: block !important;
+                box-shadow: none !important;
+            }
+            .print-page {
+                box-shadow: none !important;
+                margin: 0 !important;
+                padding: 1.5cm 2cm !important;
+                width: 100% !important;
+                min-height: auto !important;
+                height: auto !important;
+                page-break-after: always;
+                break-after: page;
+                background: #ffffff !important;
+            }
+            .print-page:last-child {
+                page-break-after: avoid;
+                break-after: avoid;
+            }
+            /* Sharp borders for formal corporate table during grayscale printing */
+            table.print-table {
+                border: 1px solid #000000 !important;
+                border-collapse: collapse !important;
+                width: 100% !important;
+            }
+            table.print-table th, table.print-table td {
+                border: 1px solid #000000 !important;
+                color: #000000 !important;
+                padding: 6px 10px !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
+
+    <!-- PASSWORD GATE SCREEN (FULLSCREEN OVERLAY) -->
+    <div id="passwordGate" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center p-4 no-print">
+        <div class="bg-white rounded-2xl p-6 md:p-8 w-full max-w-md shadow-2xl space-y-6">
+            <div class="text-center space-y-2">
+                <div class="inline-flex p-3 bg-indigo-100 text-indigo-600 rounded-2xl mb-2">
+                    <i data-lucide="lock" class="w-8 h-8"></i>
+                </div>
+                <h2 class="text-xl font-bold text-slate-900">Sistem Struktur & Skala Upah</h2>
+                <p class="text-xs text-slate-500">Silakan masukkan password.</p>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Password Akses</label>
+                    <input type="password" id="appPasswordInput" onkeydown="handlePasswordKeydown(event)" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-sm font-mono" placeholder="Masukkan password">
+                    <p id="passwordErrorMsg" class="text-xs text-red-500 mt-2 hidden font-semibold"></p>
+                </div>
+                <button onclick="verifyPassword()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg text-sm font-semibold transition-all shadow-lg shadow-indigo-200">
+                    Masuk Sistem
+                </button>
+            </div>
+            
+            <div class="border-t border-slate-100 pt-4 text-center">
+                <p class="text-[11px] text-slate-400">Sistem dikembangkan oleh: <span class="font-semibold text-slate-500">Iman N Bajuasijadji</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP WRAPPER (HIDDEN UNTIL AUTHENTICATED) -->
+    <div id="appContainer" class="hidden flex flex-col min-h-screen">
+        <!-- Header -->
+        <header class="bg-white border-b border-slate-200 sticky top-0 z-30 no-print">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-indigo-600 text-white p-2 rounded-lg">
+                        <i data-lucide="scale" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg text-slate-900 leading-tight">Sistem Struktur & Skala Upah</h1>
+                        <p class="text-xs text-slate-500">Pengembang: <span class="font-semibold text-slate-700">Iman N Bajuasijadji</span> | Sesuai Permenaker No. 1 Tahun 2017</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                        Sistem Dua Pilihan Model
+                    </span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 no-print">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <!-- Left Panel: Input Parameters -->
+                <section class="lg:col-span-5 space-y-6">
+
+                    <!-- Model Pemilihan Penyusunan -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <div class="flex items-center space-x-2 border-b border-slate-100 pb-3">
+                            <i data-lucide="settings-2" class="text-indigo-600 w-5 h-5"></i>
+                            <h2 class="font-bold text-slate-900">Metode & Model Penyusunan</h2>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Pilih Model Penyusunan</label>
+                            <select id="methodSelector" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-sm font-semibold bg-white">
+                                <option value="pilihan1" selected>Pilihan 1: Upah Pokok & Tunjangan (Dua Titik Standar)</option>
+                                <option value="pilihan2">Pilihan 2: Clean Wages / Upah Tanpa Tunjangan</option>
+                            </select>
+                            <p id="methodHelpText" class="text-[11px] text-slate-500 mt-1.5 leading-relaxed">Menggunakan metode dua titik standar dengan nilai upah tengah terendah dan tertinggi ditentukan langsung.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Identitas & Parameter Dasar -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <div class="flex items-center space-x-2 border-b border-slate-100 pb-3">
+                            <i data-lucide="building-2" class="text-indigo-600 w-5 h-5"></i>
+                            <h2 class="font-bold text-slate-900">Parameter Korporat & Jabatan</h2>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Nama Perusahaan</label>
+                                <input type="text" id="companyName" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-sm font-semibold" placeholder="PT. Sukses Bersama Indonesia" value="PT. Sukses Bersama Indonesia">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Alamat Perusahaan</label>
+                                <input type="text" id="companyAddress" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-sm" placeholder="Gedung Executive Center, Lantai 12, Jl. Jenderal Sudirman, Surabaya, Jawa Timur" value="Gedung Executive Center, Lantai 12, Jl. Jenderal Sudirman, Surabaya, Jawa Timur">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Nomor Telepon</label>
+                                <input type="text" id="companyPhone" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-sm" placeholder="(031) 555-0192" value="(031) 555-0192">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Nama Direktur Utama</label>
+                                    <input type="text" id="directorName" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-sm font-medium" placeholder="Nama Direktur Utama" value="Dr. Junialdi, S.E.,M.M.">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Nama Manager HR/HC</label>
+                                    <input type="text" id="hrManagerName" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-sm font-medium" placeholder="Nama Manager HR/HC" value="Dr. Iffah Rosyiana, M.Psi, Psikolog.">
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Poin Terkecil</label>
+                                    <input type="number" id="poinTerkecil" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-sm" value="150" placeholder="Contoh: 150">
+                                    <p class="text-[10px] text-slate-400 mt-1 italic">*Isi hasil Job Evaluation</p>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Poin Terbesar</label>
+                                    <input type="number" id="poinTerbesar" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-sm" value="870" placeholder="Contoh: 870">
+                                    <p class="text-[10px] text-slate-400 mt-1 italic">*Isi hasil Job Evaluation</p>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Jumlah Golongan Jabatan</label>
+                                <input type="number" id="jumlahGolongan" min="2" max="20" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-sm" value="8">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Parameter Pengupahan (Dynamic Labels via JS) -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <div class="flex items-center space-x-2 border-b border-slate-100 pb-3">
+                            <i data-lucide="coins" class="text-indigo-600 w-5 h-5"></i>
+                            <h2 class="font-bold text-slate-900">Kebijakan Pengupahan (Rupiah)</h2>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <div>
+                                <label id="labelUpahMin" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Upah Tengah Terendah (Gol. I)</label>
+                                <div class="relative rounded-lg shadow-sm">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <span class="text-slate-500 text-sm">Rp</span>
+                                    </div>
+                                    <input type="number" id="upahMin" class="w-full pl-10 pr-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm font-semibold" value="2050000" placeholder="Masukkan Nilai">
+                                </div>
+                                <p id="descUpahMin" class="text-[11px] text-slate-500 mt-1">Biasanya berbasis pada ketentuan **Upah Minimum** daerah yang berlaku.</p>
+                            </div>
+
+                            <div>
+                                <label id="labelUpahMax" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Upah Tengah Tertinggi (Gol. Akhir)</label>
+                                <div class="relative rounded-lg shadow-sm">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <span class="text-slate-500 text-sm">Rp</span>
+                                    </div>
+                                    <input type="number" id="upahMax" class="w-full pl-10 pr-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm font-semibold" value="20000000" placeholder="Masukkan Nilai">
+                                </div>
+                                <p id="descUpahMax" class="text-[11px] text-slate-500 mt-1">Upah kebijakan tertinggi perusahaan untuk posisi teratas.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Klasifikasi & Konfigurasi Rentang (Spread) -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                            <div class="flex items-center space-x-2">
+                                <i data-lucide="sliders" class="text-indigo-600 w-5 h-5"></i>
+                                <h2 class="font-bold text-slate-900">Konfigurasi Rentang (Spread)</h2>
+                            </div>
+                            <span class="text-xs text-indigo-600 font-semibold cursor-pointer hover:underline" onclick="resetSpreadDefaults()">Gunakan Default</span>
+                        </div>
+                        
+                        <div class="space-y-4 max-h-64 overflow-y-auto pr-2" id="spreadContainer">
+                            <!-- Dynamic Grade inputs for Rentang (%) will be rendered here -->
+                        </div>
+                        
+                        <div class="bg-slate-50 p-3 rounded-lg text-xs text-slate-600 space-y-1">
+                            <span class="font-bold">Panduan Acuan Rentang (Permenaker):</span>
+                            <ul class="list-disc pl-4 space-y-1 mt-1 text-[11px]">
+                                <li><strong>Staf (Gol. Bawah):</strong> 20% s.d. 50%</li>
+                                <li><strong>Supervisory (Gol. Menengah):</strong> 50% s.d. 90%</li>
+                                <li><strong>Managerial (Gol. Atas):</strong> 90% atau lebih</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Kontrol Skenario -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <h3 class="font-bold text-sm text-slate-900">Simpan & Kelola Skenario</h3>
+                        <div class="flex space-x-2">
+                            <input type="text" id="scenarioName" class="flex-grow px-3 py-2 border border-slate-200 rounded-lg text-xs" placeholder="Nama Skenario (Misal: Draft 1)">
+                            <button onclick="saveCurrentScenario()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-xs font-semibold flex items-center space-x-1 transition-all">
+                                <i data-lucide="save" class="w-4 h-4"></i>
+                                <span>Simpan</span>
+                            </button>
+                        </div>
+                        
+                        <div id="savedScenariosList" class="space-y-2 max-h-36 overflow-y-auto">
+                            <!-- List skenario yang tersimpan di localstorage -->
+                            <p class="text-xs text-slate-400 italic">Belum ada skenario tersimpan.</p>
+                        </div>
+                    </div>
+
+                </section>
+
+                <!-- Right Panel: Data Presentation & Visualization -->
+                <section class="lg:col-span-7 space-y-6">
+
+                    <!-- Actions Bar -->
+                    <div class="flex flex-wrap justify-between items-center gap-3 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex items-center space-x-2">
+                            <button onclick="calculateAndRender()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center space-x-1.5 transition-all shadow-sm">
+                                <i data-lucide="calculator" class="w-4 h-4"></i>
+                                <span>Kalkulasi Struktur</span>
+                            </button>
+                            <button onclick="clearAllInputs()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-semibold flex items-center space-x-1.5 transition-all">
+                                <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                                <span>Clear</span>
+                            </button>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="showPdfPreviewModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center space-x-1.5 transition-all shadow-sm">
+                                <i data-lucide="file-text" class="w-4 h-4"></i>
+                                <span>Pratinjau PDF / Cetak</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Graphical Chart Representation -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                            <div class="flex items-center space-x-2">
+                                <i data-lucide="line-chart" class="text-indigo-600 w-5 h-5"></i>
+                                <h2 class="font-bold text-slate-900">Grafik Garis Kebijakan Upah</h2>
+                            </div>
+                        </div>
+                        <div class="relative h-72">
+                            <canvas id="wageChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Table View: Struktur dan Skala Upah -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="p-6 border-b border-slate-100">
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center space-x-2">
+                                    <i data-lucide="table-properties" class="text-indigo-600 w-5 h-5"></i>
+                                    <h2 class="font-bold text-slate-900">Tabel Struktur dan Skala Upah</h2>
+                                </div>
+                                <button onclick="exportToCSV()" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center space-x-1">
+                                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                                    <span>Ekspor CSV</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-slate-200 text-sm">
+                                <thead class="bg-slate-50">
+                                    <tr>
+                                        <th scope="col" class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Gol. Jabatan</th>
+                                        <th scope="col" class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Rentang Nilai (Poin)</th>
+                                        <th scope="col" class="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Spread (%)</th>
+                                        <th scope="col" class="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Upah Terkecil (Min)</th>
+                                        <th scope="col" class="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Upah Tengah (Mid)</th>
+                                        <th scope="col" class="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Upah Terbesar (Max)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="wageTableBody" class="divide-y divide-slate-100 bg-white">
+                                    <!-- Computed Wage Structure Rows will be injected here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="bg-slate-50 p-4 border-t border-slate-200">
+                            <p class="text-xs text-slate-500 flex items-start space-x-1">
+                                <i data-lucide="info" class="w-4 h-4 text-indigo-500 flex-shrink-0 mt-0.5"></i>
+                                <span>Sistem ini menggunakan rumus <strong>Upah Terkecil (Min) = 2*Mid / (Spread + 2)</strong> dan <strong>Upah Terbesar (Max) = 2*Mid*(Spread + 1) / (Spread + 2)</strong> berdasarkan ketentuan Permenaker No. 1/2017 Lampiran Metode Dua Titik.</span>
+                            </p>
+                        </div>
+                    </div>
+
+                </section>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-white border-t border-slate-200 py-6 mt-12 no-print">
+            <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 space-y-1">
+                <p>&copy; 2026 Aplikasi Penyusunan Struktur dan Skala Upah Indonesia.</p>
+                <p>Dirancang sesuai PP No. 36 Tahun 2021 dan Permenaker RI Nomor 1 Tahun 2017.</p>
+                <p class="text-[11px] text-slate-400 font-medium mt-2">Sistem dikembangkan oleh: <span class="text-slate-600 font-semibold">Iman N Bajuasijadji</span></p>
+            </div>
+        </footer>
+
+        <!-- PDF & PRINT PREVIEW MODAL (UPGRADED PREVIEW INTEGRITY) -->
+        <div id="pdfModal" class="fixed inset-0 bg-slate-900 bg-opacity-75 z-50 hidden flex items-center justify-center p-4">
+            <div class="bg-slate-800 rounded-2xl w-full max-w-5xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in duration-200 border border-slate-700">
+                <!-- Modal Header -->
+                <div class="bg-slate-950 text-white p-4 flex justify-between items-center border-b border-slate-800">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-1.5 bg-emerald-500/20 rounded text-emerald-400">
+                            <i data-lucide="file-check" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-sm tracking-wide">Dokumen Resmi Struktur & Skala Upah</h3>
+                            <p class="text-[11px] text-slate-400">Pratinjau Cetak Formal (A4 Standard)</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg flex items-center space-x-2 transition-all shadow-lg shadow-emerald-950/50">
+                            <i data-lucide="printer" class="w-4 h-4"></i>
+                            <span>Cetak / Ekspor PDF</span>
+                        </button>
+                        <button onclick="closePdfPreviewModal()" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-900 transition-all">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Printable Double-Page stacked preview container -->
+                <div class="flex-grow p-8 overflow-y-auto bg-slate-900/60 flex flex-col items-center space-y-8 select-none">
+                    
+                    <div id="printArea" class="space-y-8 w-full max-w-[21cm]">
+                        
+                        <!-- PAGE 1: SURAT KEPUTUSAN DIREKSI -->
+                        <div class="print-page bg-white p-[2.5cm] shadow-2xl text-black text-[12px] leading-relaxed font-serif min-h-[29.7cm] flex flex-col justify-between">
+                            <div>
+                                <!-- Letterhead / Kop Surat Resmi -->
+                                <div class="text-center border-b-4 border-double border-black pb-4 mb-6">
+                                    <h2 id="pdfHeaderCompany" class="text-xl font-bold uppercase font-sans tracking-wider text-slate-900">PT. SUKSES BERSAMA INDONESIA</h2>
+                                    <p id="pdfHeaderAddress" class="text-[10px] font-sans tracking-wide text-gray-600 mt-1">Gedung Executive Center, Lantai 12, Jl. Jenderal Sudirman, Surabaya, Jawa Timur</p>
+                                    <p id="pdfHeaderPhone" class="text-[9px] font-sans text-gray-500">Telp: (031) 555-0192</p>
+                                </div>
+
+                                <!-- Judul SK -->
+                                <div class="text-center space-y-1 mb-8">
+                                    <h3 class="text-sm font-bold uppercase tracking-wide decoration-solid underline">KEPUTUSAN DIREKSI</h3>
+                                    <p class="font-sans font-bold text-[10px] text-gray-700">NOMOR: KEP.042/HRD-SSU/VI/2026</p>
+                                    <p class="text-[10px] font-sans font-semibold text-gray-500">TENTANG</p>
+                                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-900">PENETAPAN STRUKTUR DAN SKALA UPAH PERUSAHAAN</h4>
+                                </div>
+
+                                <!-- ISI SK -->
+                                <div class="space-y-4 text-justify">
+                                    <div class="grid grid-cols-12 gap-2">
+                                        <div class="col-span-3 font-bold">Menimbang</div>
+                                        <div class="col-span-1 text-center">:</div>
+                                        <div class="col-span-8 space-y-2">
+                                            <div class="flex items-start"><span class="mr-2">a.</span><span>Bahwa untuk melaksanakan ketentuan Pasal 92 ayat (3) Undang-Undang Nomor 13 Tahun 2003 tentang Ketenagakerjaan serta Peraturan Menteri Ketenagakerjaan Nomor 1 Tahun 2017;</span></div>
+                                            <div class="flex items-start"><span class="mr-2">b.</span><span>Bahwa demi mewujudkan iklim kerja yang kondusif, produktif, adil, dan berdaya saing tinggi, perlu dibentuk sistem pengupahan berdasar bobot jabatan.</span></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-12 gap-2 mt-4">
+                                        <div class="col-span-3 font-bold">Mengingat</div>
+                                        <div class="col-span-1 text-center">:</div>
+                                        <div class="col-span-8 space-y-2">
+                                            <div class="flex items-start"><span class="mr-2">1.</span><span>Undang-Undang Nomor 13 Tahun 2003 tentang Ketenagakerjaan;</span></div>
+                                            <div class="flex items-start"><span class="mr-2">2.</span><span>Peraturan Pemerintah Nomor 36 Tahun 2021 tentang Pengupahan;</span></div>
+                                            <div class="flex items-start"><span class="mr-2">3.</span><span>Peraturan Menteri Ketenagakerjaan Nomor 1 Tahun 2017 tentang Struktur dan Skala Upah.</span></div>
+                                        </div>
+                                    </div>
+
+                                    <p class="font-bold text-center uppercase tracking-widest text-xs my-6">MEMUTUSKAN</p>
+
+                                    <div class="grid grid-cols-12 gap-2">
+                                        <div class="col-span-3 font-bold">Menetapkan</div>
+                                        <div class="col-span-1 text-center">:</div>
+                                        <div class="col-span-8 space-y-2">
+                                            <div class="flex items-start"><span class="mr-3 font-semibold">PERTAMA:</span><span>Memberlakukan Struktur dan Skala Upah Perusahaan periode tahun berjalan sebagaimana terlampir dalam keputusan ini.</span></div>
+                                            <div class="flex items-start"><span class="mr-3 font-semibold">KEDUA:</span><span>Struktur dan Skala Upah tersebut menjadi pedoman dalam penetapan upah pokok bagi pekerja yang mempunyai hubungan kerja formal.</span></div>
+                                            <div class="flex items-start"><span class="mr-3 font-semibold">KETIGA:</span><span>Keputusan ini mulai berlaku sejak tanggal ditetapkan, dengan ketentuan apabila terdapat kekeliruan akan diperbaiki sebagaimana mestinya.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Footer Signee Halaman 1 -->
+                            <div class="mt-12 flex justify-between items-end border-t border-gray-150 pt-6">
+                                <div>
+                                    <p class="text-[9px] text-gray-400">Dokumen Internal <span id="pdfFooterCompanySpan">PT. Sukses Bersama Indonesia</span></p>
+                                </div>
+                                <div class="text-right w-64">
+                                    <p>Ditetapkan di: Jakarta</p>
+                                    <p>Pada tanggal: 9 Juni 2026</p>
+                                    <p class="font-bold mt-2">Direktur Utama,</p>
+                                    <div class="h-16"></div>
+                                    <p class="underline font-bold" id="pdfSigneeCompany">( Budi Santoso, S.E. )</p>
+                                    <p class="text-[10px] text-gray-500" id="pdfSigneeSub">Direktur Utama</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PAGE 2: LAMPIRAN STRUKTUR DAN SKALA UPAH -->
+                        <div class="print-page bg-white p-[2.5cm] shadow-2xl text-black text-[12px] leading-relaxed font-serif min-h-[29.7cm] flex flex-col justify-between">
+                            <div>
+                                <!-- Header Lampiran -->
+                                <div class="flex justify-between items-start border-b border-black pb-3 mb-6">
+                                    <div>
+                                        <span class="font-sans font-bold text-[10px] uppercase tracking-wider text-gray-500">Lampiran SK Direksi</span>
+                                        <p class="text-[9px] font-sans text-gray-400">Nomor: KEP.042/HRD-SSU/VI/2026</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-sans font-bold text-[10px] text-slate-900" id="pdfHeaderCompany2">PT. SUKSES BERSAMA INDONESIA</p>
+                                    </div>
+                                </div>
+
+                                <div class="text-center my-4">
+                                    <h3 class="font-bold text-xs uppercase tracking-wider">TABEL RESMI STRUKTUR DAN SKALA UPAH</h3>
+                                    <p id="pdfMethodText" class="text-[10px] font-sans text-gray-500 mt-1">Metode: Pilihan 1 - Upah Pokok & Tunjangan (Dua Titik Standar)</p>
+                                </div>
+
+                                <!-- Grayscale Print-optimized Table -->
+                                <table class="print-table w-full border border-black border-collapse text-[10px] text-left">
+                                    <thead>
+                                        <tr class="bg-gray-100 font-sans font-bold uppercase text-[9px] border-b border-black text-center">
+                                            <th class="border border-black px-3 py-2">Golongan</th>
+                                            <th class="border border-black px-3 py-2">Batas Nilai Poin</th>
+                                            <th class="border border-black px-3 py-2">Spread (%)</th>
+                                            <th class="border border-black px-3 py-2 text-right">Upah Terkecil (Min)</th>
+                                            <th class="border border-black px-3 py-2 text-right">Upah Tengah (Mid)</th>
+                                            <th class="border border-black px-3 py-2 text-right">Upah Terbesar (Max)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="pdfWageTableBody">
+                                        <!-- Dynamic calculation rows populate here -->
+                                    </tbody>
+                                </table>
+
+                                <div class="mt-6 bg-gray-50 p-3 rounded border border-gray-200 text-[10px] leading-relaxed text-gray-600 font-sans">
+                                    <strong>Catatan Teknis Struktur:</strong>
+                                    <ul class="list-disc pl-5 mt-1 space-y-0.5">
+                                        <li>Perhitungan batas poin menggunakan pembagian range interval proporsional berdasarkan poin evaluasi jabatan terkecil dan terbesar.</li>
+                                        <li>Pengelompokan rentang upah (spread) disesuaikan dengan regulasi klasifikasi staf, supervisor, dan manajemen.</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Signature / Pengesahan Halaman 2 (3-Column Layout for Prepared, Approved and Acknowledged) -->
+                            <div class="mt-12 grid grid-cols-3 gap-4 text-xs pt-6 border-t border-gray-150">
+                                 <div class="text-center">
+                                    <p>Dibuat oleh (Prepared by),</p>
+                                    <p class="font-bold text-gray-700">Manager HR/HC</p>
+                                    <div class="h-16"></div>
+                                    <p class="underline font-bold text-slate-800" id="pdfSigneeHR">( Iman N Bajuasijadji, S.Psi. )</p>
+                                    <p class="text-[9px] text-gray-500" id="pdfSigneeSubHR">Manager HR/HC</p>
+                                </div>
+                                <div class="text-center">
+                                    <p>Disetujui oleh (Approved by),</p>
+                                    <p class="font-bold text-gray-700" id="pdfHeaderCompanySign">PT. SUKSES BERSAMA INDONESIA</p>
+                                    <div class="h-16"></div>
+                                    <p class="underline font-bold text-slate-800" id="pdfSigneeCompany2">( Budi Santoso, S.E. )</p>
+                                    <p class="text-[9px] text-gray-500" id="pdfSigneeSub2">Direktur Utama</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Alert Toast Notification -->
+    <div id="customToast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 ease-out pointer-events-none">
+        <div class="bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 border border-slate-700">
+            <i id="toastIcon" data-lucide="alert-circle" class="w-5 h-5 text-indigo-400"></i>
+            <span id="customToastMessage" class="text-xs font-semibold"></span>
+        </div>
+    </div>
+
+    <!-- Script Logic -->
+    <script>
+        // Global State Variables
+        let wageChartInstance = null;
+        let activeStructure = [];
+
+        // App Initializer
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            
+            // Listeners
+            document.getElementById('jumlahGolongan').addEventListener('change', () => {
+                generateSpreadInputs();
+                calculateAndRender();
+            });
+            document.getElementById('poinTerkecil').addEventListener('input', calculateAndRender);
+            document.getElementById('poinTerbesar').addEventListener('input', calculateAndRender);
+            document.getElementById('upahMin').addEventListener('input', calculateAndRender);
+            document.getElementById('upahMax').addEventListener('input', calculateAndRender);
+            document.getElementById('methodSelector').addEventListener('change', updateMethodLabels);
+
+            // Initial Build
+            generateSpreadInputs();
+            updateMethodLabels();
+            renderScenarioList();
+        });
+
+        // --- PASSWORD SYSTEM LOGIC ---
+        function getRequiredPassword() {
+            const now = new Date();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            return `SSU-${month}`;
+        }
+
+        function verifyPassword() {
+            const userInput = document.getElementById('appPasswordInput').value.trim();
+            const correctPassword = getRequiredPassword();
+            const errorElement = document.getElementById('passwordErrorMsg');
+
+            if (userInput === correctPassword) {
+                // Hide Gate, Show Main App
+                document.getElementById('passwordGate').classList.add('hidden');
+                document.getElementById('appContainer').classList.remove('hidden');
+                
+                // Re-render chart inside newly visible container to avoid container width bugs
+                calculateAndRender();
+                showToast("Akses diberikan. Selamat bekerja!");
+            } else {
+                errorElement.innerText = `Password salah!`;
+                errorElement.classList.remove('hidden');
+                showToast("Akses ditolak. Password salah!", true);
+            }
+        }
+
+        function handlePasswordKeydown(event) {
+            if (event.key === 'Enter') {
+                verifyPassword();
+            }
+        }
+        // -----------------------------
+
+        // Custom Toast system replacing standard browser alerts
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('customToast');
+            const toastMsg = document.getElementById('customToastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+            
+            toastMsg.innerText = message;
+            
+            if (isError) {
+                toastIcon.setAttribute('data-lucide', 'x-circle');
+                toastIcon.className = "w-5 h-5 text-rose-400";
+            } else {
+                toastIcon.setAttribute('data-lucide', 'check-circle');
+                toastIcon.className = "w-5 h-5 text-emerald-400";
+            }
+            lucide.createIcons();
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+
+        // Update Labels and Descriptions depending on Pilihan 1 or Pilihan 2
+        function updateMethodLabels() {
+            const selectedMethod = document.getElementById('methodSelector').value;
+            const labelUpahMin = document.getElementById('labelUpahMin');
+            const descUpahMin = document.getElementById('descUpahMin');
+            const labelUpahMax = document.getElementById('labelUpahMax');
+            const descUpahMax = document.getElementById('descUpahMax');
+            const methodHelpText = document.getElementById('methodHelpText');
+
+            if (selectedMethod === 'pilihan1') {
+                labelUpahMin.innerText = "Upah Tengah Terendah (Gol. I)";
+                descUpahMin.innerHTML = "Biasanya berbasis pada ketentuan <strong>Upah Minimum</strong> daerah yang berlaku.";
+                labelUpahMax.innerText = "Upah Tengah Tertinggi (Gol. Akhir)";
+                descUpahMax.innerHTML = "Upah kebijakan tertinggi perusahaan untuk posisi teratas.";
+                methodHelpText.innerText = "Menggunakan metode dua titik standar dengan nilai upah tengah terendah dan tertinggi ditentukan langsung melalui interpolasi linear.";
+            } else {
+                labelUpahMin.innerText = "Upah Minimum Berlaku (Min Gol. I)";
+                descUpahMin.innerHTML = "Diisi secara manual sebagai batas upah terkecil (Min) absolut Golongan I.";
+                labelUpahMax.innerText = "Upah Tertinggi Riil Perusahaan (Mid Gol. Akhir)";
+                descUpahMax.innerHTML = "Ditempatkan langsung sebagai nilai <strong>Upah Tengah (Mid)</strong> pada golongan tertinggi perusahaan.";
+                methodHelpText.innerText = "Clean Wages / Upah Utuh: Golongan I dihitung menggunakan Rumus No. 2, Golongan tertinggi menggunakan Upah Aktual Riil sebagai Midpoint.";
+            }
+            calculateAndRender();
+        }
+
+        // Generate input fields for Rentang (%) dynamically depending on the selected number of grades
+        function generateSpreadInputs() {
+            const count = parseInt(document.getElementById('jumlahGolongan').value) || 2;
+            const container = document.getElementById('spreadContainer');
+            container.innerHTML = '';
+
+            for (let i = 1; i <= count; i++) {
+                // Determine automatic default based on grade tiers (staff, supervisor, manager)
+                let defaultSpread = 40; // Default Staff
+                if (count > 3) {
+                    const ratio = i / count;
+                    if (ratio > 0.8) {
+                        defaultSpread = 100; // Managerial
+                    } else if (ratio > 0.4) {
+                        defaultSpread = 70; // Supervisory
+                    }
+                }
+
+                const div = document.createElement('div');
+                div.className = "flex items-center justify-between space-x-3 text-xs bg-slate-50 p-2.5 rounded-lg border border-slate-200";
+                div.innerHTML = `
+                    <span class="font-semibold text-slate-700">Golongan ${i}</span>
+                    <div class="flex items-center space-x-2">
+                        <input type="number" id="spread_gol_${i}" value="${defaultSpread}" min="10" max="150" class="w-16 px-2 py-1 text-right border border-slate-300 rounded focus:ring-1 focus:ring-indigo-500 text-xs">
+                        <span class="text-slate-500 font-semibold">%</span>
+                    </div>
+                `;
+                container.appendChild(div);
+            }
+        }
+
+        // Fast Reset of Spreads to defaults
+        function resetSpreadDefaults() {
+            const count = parseInt(document.getElementById('jumlahGolongan').value) || 2;
+            for (let i = 1; i <= count; i++) {
+                let defaultSpread = 40;
+                if (count > 3) {
+                    const ratio = i / count;
+                    if (ratio > 0.8) {
+                        defaultSpread = 100;
+                    } else if (ratio > 0.4) {
+                        defaultSpread = 70;
+                    }
+                }
+                const inputElement = document.getElementById(`spread_gol_${i}`);
+                if (inputElement) {
+                    inputElement.value = defaultSpread;
+                }
+            }
+            calculateAndRender();
+        }
+
+        // Format raw numbers to beautiful Currency IDR Format
+        function formatRupiah(num) {
+            return "Rp " + Math.round(num).toLocaleString('id-ID');
+        }
+
+        // Main Calculation Engine of the Structure and Scale of Wages
+        function calculateAndRender() {
+            const companyName = document.getElementById('companyName').value || "PT. Sukses Bersama Indonesia";
+            const numGrades = parseInt(document.getElementById('jumlahGolongan').value) || 2;
+            const ptKecil = parseInt(document.getElementById('poinTerkecil').value) || 150;
+            const ptBesar = parseInt(document.getElementById('poinTerbesar').value) || 870;
+            const upahMin = parseFloat(document.getElementById('upahMin').value) || 2050000;
+            const upahMax = parseFloat(document.getElementById('upahMax').value) || 20000000;
+            const selectedMethod = document.getElementById('methodSelector').value;
+
+            // Menghitung Range (Interval) sesuai dengan formula poin:
+            const rangeVal = (ptBesar - ptKecil) / numGrades;
+            const computedData = [];
+            let prevMaxPoint = 0;
+
+            if (selectedMethod === 'pilihan1') {
+                // PILIHAN 1: Dua Titik Standar (Upah Pokok & Tunjangan)
+                const b = (upahMax - upahMin) / (numGrades - 1 || 1);
+                const a = upahMin - b * 1;
+
+                for (let i = 1; i <= numGrades; i++) {
+                    let startPoint, endPoint;
+                    if (i === 1) {
+                        startPoint = ptKecil;
+                        endPoint = Math.round(ptKecil + rangeVal);
+                    } else {
+                        startPoint = prevMaxPoint + 1;
+                        endPoint = Math.round(prevMaxPoint + rangeVal);
+                    }
+                    prevMaxPoint = endPoint;
+
+                    const midPointVal = a + b * i;
+
+                    const spreadInput = document.getElementById(`spread_gol_${i}`);
+                    const spreadVal = spreadInput ? parseFloat(spreadInput.value) : 40;
+                    const spreadDecimal = spreadVal / 100;
+
+                    const minWageVal = (2 * midPointVal) / (spreadDecimal + 2);
+                    const maxWageVal = (2 * midPointVal * (spreadDecimal + 1)) / (spreadDecimal + 2);
+
+                    computedData.push({
+                        grade: i,
+                        pointRange: `${startPoint} - ${endPoint}`,
+                        spread: spreadVal,
+                        min: minWageVal,
+                        mid: midPointVal,
+                        max: maxWageVal
+                    });
+                }
+            } else {
+                // PILIHAN 2: Clean Wages / Upah Utuh (Formula Lampiran)
+                // - Upah Minimum (diinput manual) diletakkan sebagai Min Golongan 1
+                const min1 = upahMin;
+                
+                // Cari Spread Golongan 1
+                const spreadInputGol1 = document.getElementById('spread_gol_1');
+                const spreadValGol1 = spreadInputGol1 ? parseFloat(spreadInputGol1.value) : 40;
+                const spreadDecimalGol1 = spreadValGol1 / 100;
+
+                // Hitung Mid 1 & Max 1 berdasarkan Rumus No. 2:
+                // Mid = Min * (Spread + 2) / 2
+                // Max = Min * (Spread + 1)
+                const mid1 = (min1 * (spreadDecimalGol1 + 2)) / 2;
+                const max1 = min1 * (spreadDecimalGol1 + 1);
+
+                // Mid Golongan Terakhir = upahMax (Upah Tertinggi Riil)
+                const midN = upahMax;
+
+                // Lakukan Interpolasi Linear di antara Mid 1 dan Mid N
+                const b = (midN - mid1) / (numGrades - 1 || 1);
+                const a = mid1 - b * 1;
+
+                for (let i = 1; i <= numGrades; i++) {
+                    let startPoint, endPoint;
+                    if (i === 1) {
+                        startPoint = ptKecil;
+                        endPoint = Math.round(ptKecil + rangeVal);
+                    } else {
+                        startPoint = prevMaxPoint + 1;
+                        endPoint = Math.round(prevMaxPoint + rangeVal);
+                    }
+                    prevMaxPoint = endPoint;
+
+                    const spreadInput = document.getElementById(`spread_gol_${i}`);
+                    const spreadVal = spreadInput ? parseFloat(spreadInput.value) : 40;
+                    const spreadDecimal = spreadVal / 100;
+
+                    let minWageVal, midPointVal, maxWageVal;
+
+                    if (i === 1) {
+                        minWageVal = min1;
+                        midPointVal = mid1;
+                        maxWageVal = max1;
+                    } else {
+                        // Untuk golongan selain Golongan 1, cari nilai Tengah (Mid) dari interpolasi linear
+                        midPointVal = a + b * i;
+
+                        // Cari Min & Max menggunakan Rumus No. 6 (Mid & Spread diketahui)
+                        minWageVal = (2 * midPointVal) / (spreadDecimal + 2);
+                        maxWageVal = (2 * midPointVal * (spreadDecimal + 1)) / (spreadDecimal + 2);
+                    }
+
+                    computedData.push({
+                        grade: i,
+                        pointRange: `${startPoint} - ${endPoint}`,
+                        spread: spreadVal,
+                        min: minWageVal,
+                        mid: midPointVal,
+                        max: maxWageVal
+                    });
+                }
+            }
+
+            activeStructure = computedData;
+
+            // Render output to the Table View
+            const tableBody = document.getElementById('wageTableBody');
+            tableBody.innerHTML = '';
+            
+            computedData.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition-colors";
+                tr.innerHTML = `
+                    <td class="px-4 py-3 font-bold text-slate-800">Golongan ${row.grade}</td>
+                    <td class="px-4 py-3 text-slate-600 font-medium">${row.pointRange}</td>
+                    <td class="px-4 py-3 text-center text-slate-700 font-semibold">${row.spread}%</td>
+                    <td class="px-4 py-3 text-right text-slate-600 font-mono">${formatRupiah(row.min)}</td>
+                    <td class="px-4 py-3 text-right text-slate-900 font-bold font-mono">${formatRupiah(row.mid)}</td>
+                    <td class="px-4 py-3 text-right text-slate-600 font-mono">${formatRupiah(row.max)}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+
+            // Re-render Chart visualization
+            renderWageChart(computedData);
+        }
+
+        // Visual Chart rendering via Chart.js
+        function renderWageChart(data) {
+            const ctx = document.getElementById('wageChart').getContext('2d');
+            
+            // Labels (Grade 1, Grade 2...)
+            const labels = data.map(item => `Gol. ${item.grade}`);
+            
+            // Floating bar data [Min, Max]
+            const barData = data.map(item => [item.min, item.max]);
+            // Line midpoints [Mid]
+            const midData = data.map(item => item.mid);
+
+            if (wageChartInstance) {
+                wageChartInstance.destroy();
+            }
+
+            wageChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Rentang Skala Upah (Min - Max)',
+                            data: barData,
+                            backgroundColor: 'rgba(99, 102, 241, 0.25)',
+                            borderColor: 'rgba(99, 102, 241, 0.8)',
+                            borderWidth: {
+                                top: 2,
+                                bottom: 2,
+                                left: 1,
+                                right: 1
+                            },
+                            borderRadius: 6,
+                            borderSkipped: false,
+                            order: 2,
+                        },
+                        {
+                            label: 'Garis Kebijakan Upah Tengah (Mid)',
+                            data: midData,
+                            type: 'line',
+                            borderColor: '#e11d48',
+                            backgroundColor: '#e11d48',
+                            borderWidth: 2,
+                            pointStyle: 'circle',
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                            fill: false,
+                            tension: 0,
+                            order: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    family: 'Plus Jakarta Sans',
+                                    size: 11,
+                                    weight: '600'
+                                },
+                                color: '#334155'
+                            }
+                        },
+                        tooltip: {
+                            fontFamily: 'Plus Jakarta Sans',
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.dataset.type === 'line') {
+                                        label += formatRupiah(context.raw);
+                                    } else {
+                                        const values = context.raw;
+                                        label += `${formatRupiah(values[0])} - ${formatRupiah(values[1])}`;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                color: '#f1f5f9'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return "Rp " + value.toLocaleString('id-ID');
+                                },
+                                font: {
+                                    family: 'Plus Jakarta Sans',
+                                    size: 10
+                                },
+                                color: '#64748b'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: {
+                                    family: 'Plus Jakarta Sans',
+                                    size: 11,
+                                    weight: '600'
+                                },
+                                color: '#334155'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Scenario Management: Save current parameters to localStorage
+        function saveCurrentScenario() {
+            const name = document.getElementById('scenarioName').value.trim();
+            if (!name) {
+                showToast("Masukkan nama skenario terlebih dahulu.", true);
+                return;
+            }
+
+            const state = {
+                companyName: document.getElementById('companyName').value,
+                companyAddress: document.getElementById('companyAddress').value,
+                companyPhone: document.getElementById('companyPhone').value,
+                directorName: document.getElementById('directorName').value,
+                hrManagerName: document.getElementById('hrManagerName').value,
+                jumlahGolongan: document.getElementById('jumlahGolongan').value,
+                poinTerkecil: document.getElementById('poinTerkecil').value,
+                poinTerbesar: document.getElementById('poinTerbesar').value,
+                upahMin: document.getElementById('upahMin').value,
+                upahMax: document.getElementById('upahMax').value,
+                selectedMethod: document.getElementById('methodSelector').value,
+                spreads: []
+            };
+
+            const count = parseInt(state.jumlahGolongan);
+            for (let i = 1; i <= count; i++) {
+                const spreadVal = document.getElementById(`spread_gol_${i}`)?.value || 40;
+                state.spreads.push(spreadVal);
+            }
+
+            let savedScenarios = JSON.parse(localStorage.getItem('saved_ssu_scenarios')) || {};
+            savedScenarios[name] = state;
+            localStorage.setItem('saved_ssu_scenarios', JSON.stringify(savedScenarios));
+
+            document.getElementById('scenarioName').value = '';
+            showToast("Skenario berhasil disimpan!");
+            renderScenarioList();
+        }
+
+        // Render scenario list onto UI
+        function renderScenarioList() {
+            const listContainer = document.getElementById('savedScenariosList');
+            const savedScenarios = JSON.parse(localStorage.getItem('saved_ssu_scenarios')) || {};
+
+            if (Object.keys(savedScenarios).length === 0) {
+                listContainer.innerHTML = '<p class="text-xs text-slate-400 italic">Belum ada skenario tersimpan.</p>';
+                return;
+            }
+
+            listContainer.innerHTML = '';
+            Object.keys(savedScenarios).forEach(key => {
+                const item = document.createElement('div');
+                item.className = "flex justify-between items-center bg-slate-50 border border-slate-200 p-2 rounded-lg text-xs hover:bg-slate-100 transition-all";
+                item.innerHTML = `
+                    <span class="font-bold text-slate-700 truncate max-w-[150px] cursor-pointer" onclick="loadScenario('${key}')" title="Klik untuk memuat skenario">${key}</span>
+                    <div class="flex items-center space-x-1">
+                        <button onclick="loadScenario('${key}')" class="text-indigo-600 hover:text-indigo-800 font-semibold px-1">Pilih</button>
+                        <span class="text-slate-300">|</span>
+                        <button onclick="deleteScenario('${key}')" class="text-rose-500 hover:text-rose-700 px-1"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                    </div>
+                `;
+                listContainer.appendChild(item);
+            });
+            lucide.createIcons();
+        }
+
+        // Load specific saved scenario
+        function loadScenario(name) {
+            const savedScenarios = JSON.parse(localStorage.getItem('saved_ssu_scenarios')) || {};
+            const state = savedScenarios[name];
+
+            if (!state) return;
+
+            document.getElementById('companyName').value = state.companyName || 'PT. Sukses Bersama Indonesia';
+            document.getElementById('companyAddress').value = state.companyAddress || '';
+            document.getElementById('companyPhone').value = state.companyPhone || '';
+            document.getElementById('directorName').value = state.directorName || '';
+            document.getElementById('hrManagerName').value = state.hrManagerName || '';
+            document.getElementById('jumlahGolongan').value = state.jumlahGolongan;
+            document.getElementById('poinTerkecil').value = state.poinTerkecil;
+            document.getElementById('poinTerbesar').value = state.poinTerbesar;
+            document.getElementById('upahMin').value = state.upahMin;
+            document.getElementById('upahMax').value = state.upahMax;
+            document.getElementById('methodSelector').value = state.selectedMethod || 'pilihan1';
+
+            // Generate specific spreads based on state
+            generateSpreadInputs();
+            updateMethodLabels();
+            
+            setTimeout(() => {
+                state.spreads.forEach((spreadVal, idx) => {
+                    const input = document.getElementById(`spread_gol_${idx + 1}`);
+                    if (input) input.value = spreadVal;
+                });
+                calculateAndRender();
+                showToast(`Skenario "${name}" berhasil dimuat.`);
+            }, 50);
+        }
+
+        // Delete Saved Scenario
+        function deleteScenario(name) {
+            let savedScenarios = JSON.parse(localStorage.getItem('saved_ssu_scenarios')) || {};
+            delete savedScenarios[name];
+            localStorage.setItem('saved_ssu_scenarios', JSON.stringify(savedScenarios));
+            showToast(`Skenario "${name}" dihapus.`, true);
+            renderScenarioList();
+        }
+
+        // Clear all inputs and resets back to system baseline
+        function clearAllInputs() {
+            document.getElementById('companyName').value = '';
+            document.getElementById('companyAddress').value = '';
+            document.getElementById('companyPhone').value = '';
+            document.getElementById('directorName').value = '';
+            document.getElementById('hrManagerName').value = '';
+            document.getElementById('jumlahGolongan').value = '8';
+            document.getElementById('poinTerkecil').value = '150';
+            document.getElementById('poinTerbesar').value = '870';
+            document.getElementById('upahMin').value = '2050000';
+            document.getElementById('upahMax').value = '20000000';
+            document.getElementById('methodSelector').value = 'pilihan1';
+            generateSpreadInputs();
+            updateMethodLabels();
+            showToast("Formulir berhasil dikosongkan.", true);
+        }
+
+        // Export active calculated table to standard CSV file format
+        function exportToCSV() {
+            const companyName = document.getElementById('companyName').value || "PT. Sukses Bersama Indonesia";
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += `Skenario Struktur dan Skala Upah - ${companyName}\r\n`;
+            csvContent += "Golongan Jabatan,Poin Evaluasi Jabatan,Rentang/Spread (%),Upah Terkecil (Min),Upah Tengah (Mid),Upah Terbesar (Max)\r\n";
+
+            activeStructure.forEach(row => {
+                csvContent += `Golongan ${row.grade},"${row.pointRange}",${row.spread}%,${Math.round(row.min)},${Math.round(row.mid)},${Math.round(row.max)}\r\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Struktur_Skala_Upah_${companyName.replace(/\s+/g, '_')}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("Data berhasil diekspor.");
+        }
+
+        // Modal Action Trigger: PDF Preview and Setup printable layout
+        function showPdfPreviewModal() {
+            const companyName = document.getElementById('companyName').value || "PT. Sukses Bersama Indonesia";
+            const companyAddress = document.getElementById('companyAddress').value || "Gedung Executive Center, Lantai 12, Jl. Jenderal Sudirman, Surabaya, Jawa Timur";
+            const companyPhone = document.getElementById('companyPhone').value || "(031) 555-0192";
+            const directorName = document.getElementById('directorName').value || "Budi Santoso, S.E.";
+            const hrManagerName = document.getElementById('hrManagerName').value || "Iman N Bajuasijadji, S.Psi.";
+            const selectedMethod = document.getElementById('methodSelector').value;
+            
+            // Build Headers for PDF
+            document.getElementById('pdfHeaderCompany').innerText = companyName;
+            document.getElementById('pdfHeaderCompany2').innerText = companyName;
+            document.getElementById('pdfHeaderCompanySign').innerText = companyName;
+            document.getElementById('pdfHeaderAddress').innerText = companyAddress;
+            document.getElementById('pdfHeaderPhone').innerText = "Telp: " + companyPhone;
+
+            // Footer Company Name Page 1
+            document.getElementById('pdfFooterCompanySpan').innerText = companyName;
+
+            // Page 1 Signatures
+            document.getElementById('pdfSigneeCompany').innerText = `( ${directorName} )`;
+            document.getElementById('pdfSigneeSub').innerText = "Direktur Utama";
+
+            // Page 2 Signatures
+            document.getElementById('pdfSigneeHR').innerText = `( ${hrManagerName} )`;
+            document.getElementById('pdfSigneeSubHR').innerText = "Manager HR/HC";
+            document.getElementById('pdfSigneeCompany2').innerText = `( ${directorName} )`;
+            document.getElementById('pdfSigneeSub2').innerText = "Direktur Utama";
+
+            // Update Method Subtitle on PDF
+            document.getElementById('pdfMethodText').innerText = selectedMethod === 'pilihan1' 
+                ? "Metode: Pilihan 1 - Upah Pokok & Tunjangan (Dua Titik Standar)" 
+                : "Metode: Pilihan 2 - Clean Wages / Upah Utuh (Formula Lampiran)";
+
+            // Load values to PDF table with strict double border grid style
+            const pdfBody = document.getElementById('pdfWageTableBody');
+            pdfBody.innerHTML = '';
+
+            activeStructure.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-black text-center";
+                tr.innerHTML = `
+                    <td class="border border-black px-3 py-1.5 font-bold">Golongan ${row.grade}</td>
+                    <td class="border border-black px-3 py-1.5 font-mono">${row.pointRange}</td>
+                    <td class="border border-black px-3 py-1.5 text-center">${row.spread}%</td>
+                    <td class="border border-black px-3 py-1.5 text-right font-mono">${formatRupiah(row.min)}</td>
+                    <td class="border border-black px-3 py-1.5 text-right font-bold font-mono">${formatRupiah(row.mid)}</td>
+                    <td class="border border-black px-3 py-1.5 text-right font-mono">${formatRupiah(row.max)}</td>
+                `;
+                pdfBody.appendChild(tr);
+            });
+
+            // Display PDF Modal
+            document.getElementById('pdfModal').classList.remove('hidden');
+        }
+
+        function closePdfPreviewModal() {
+            document.getElementById('pdfModal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
